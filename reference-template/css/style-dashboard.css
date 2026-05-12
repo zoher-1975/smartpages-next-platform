@@ -1,0 +1,177 @@
+/*------------------------------------------------------------------
+  style-dashboard.css — Merchant dashboard (private, merchant-facing)
+  Inherits CSS variables from style-merchant.css
+  Platform: WhatsApp-First Social Commerce SaaS — Phase 1
+------------------------------------------------------------------*/
+
+/* =====================================================================
+   DASHBOARD LAYOUT
+   ===================================================================== */
+.dash-body {
+  background: #F7F8FA;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+.dash-header {
+  background: var(--merchant-primary);
+  padding: 16px 16px 48px;
+  position: relative;
+}
+.dash-header .dash-greeting { font-size:12px; color:rgba(255,255,255,0.8); font-family:'Jost',sans-serif; margin-bottom:2px; }
+.dash-header .dash-merchant-name { font-size:20px; font-weight:700; color:#FFF; font-family:'League Spartan',sans-serif; }
+.dash-header .dash-header-right { position:absolute; top:16px; right:16px; display:flex; gap:10px; align-items:center; }
+.dash-header .dash-notif-btn { position:relative; width:36px; height:36px; background:rgba(255,255,255,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; border:none; cursor:pointer; }
+.dash-header .dash-notif-btn img { width:20px; height:20px; filter:brightness(10); }
+.dash-header .dash-notif-btn .notif-dot { position:absolute; top:6px; right:6px; width:8px; height:8px; background:#EF4444; border-radius:50%; border:2px solid var(--merchant-primary); }
+
+/* Floating card panel that overlaps the header bottom */
+.dash-panel {
+  margin: -30px 12px 0;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  padding: 16px;
+  position: relative; z-index: 2;
+}
+
+/* =====================================================================
+   STAT CARDS
+   ===================================================================== */
+.stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.stat-card {
+  background: var(--merchant-surface);
+  border-radius: 12px; padding: 14px;
+}
+.stat-card .stat-label { font-size:11px; color:var(--merchant-muted); font-family:'Jost',sans-serif; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:6px; }
+.stat-card .stat-value { font-size:24px; font-weight:700; color:var(--merchant-text); font-family:'League Spartan',sans-serif; line-height:1; }
+.stat-card .stat-change { font-size:11px; font-family:'Jost',sans-serif; margin-top:4px; }
+.stat-card .stat-change.up { color:#10B981; }
+.stat-card .stat-change.down { color:#EF4444; }
+.stat-card .stat-icon { float:right; width:28px; height:28px; opacity:0.35; margin-top:-4px; }
+
+/* =====================================================================
+   INQUIRY LIST — leads from WhatsApp flow
+   ===================================================================== */
+.inq-list { padding: 0 12px; }
+.inq-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: #FFFFFF; border-radius: 12px;
+  padding: 14px; margin-bottom: 8px;
+  border: 1px solid #F0F0F0;
+  text-decoration: none; cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+.inq-item:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+
+.inq-item .inq-thumb {
+  width: 48px; height: 48px; border-radius: 8px;
+  object-fit: cover; flex-shrink: 0;
+  background: var(--merchant-surface);
+}
+.inq-item .inq-info { flex: 1; min-width: 0; }
+.inq-item .inq-product-name {
+  font-size: 13px; font-weight: 500; color: var(--merchant-text);
+  font-family: 'Jost', sans-serif;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.inq-item .inq-ref { font-size:11px; color:var(--merchant-muted); font-family:'Jost',sans-serif; margin-bottom:4px; }
+.inq-item .inq-meta { display:flex; align-items:center; gap:8px; }
+.inq-item .inq-time { font-size:11px; color:var(--merchant-muted); font-family:'Jost',sans-serif; }
+
+.inq-item .inq-right { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
+.inq-item .inq-price { font-size:14px; font-weight:600; color:var(--merchant-primary); font-family:'League Spartan',sans-serif; }
+
+/* Status badge */
+.inq-status { display:inline-flex; align-items:center; padding:3px 8px; border-radius:20px; font-size:11px; font-weight:500; font-family:'Jost',sans-serif; }
+.inq-status.new       { background:#EFF6FF; color:#1D4ED8; }
+.inq-status.replied   { background:#FFFBEB; color:#B45309; }
+.inq-status.quoted    { background:#FDF4FF; color:#7E22CE; }
+.inq-status.confirmed { background:#ECFDF5; color:#065F46; }
+.inq-status.closed    { background:#F9FAFB; color:#374151; border:1px solid #E5E7EB; }
+
+/* Unread indicator dot */
+.inq-unread-dot { width:8px; height:8px; border-radius:50%; background:var(--merchant-primary); flex-shrink:0; margin-top:4px; }
+
+/* =====================================================================
+   SECTION TITLES in dashboard
+   ===================================================================== */
+.dash-section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 12px 8px;
+}
+.dash-section-head .ds-title { font-size:15px; font-weight:600; color:var(--merchant-text); font-family:'League Spartan',sans-serif; }
+.dash-section-head .ds-link { font-size:13px; color:var(--merchant-primary); font-family:'Jost',sans-serif; text-decoration:none; }
+
+/* =====================================================================
+   PRODUCT ROW — in dashboard product management
+   ===================================================================== */
+.dash-product-row {
+  display: flex; align-items: center; gap: 12px;
+  background: #FFFFFF; border-radius: 10px;
+  padding: 12px; margin-bottom: 8px;
+  border: 1px solid #F0F0F0;
+}
+.dash-product-row .dp-thumb { width:52px; height:52px; border-radius:8px; object-fit:cover; flex-shrink:0; background:var(--merchant-surface); }
+.dash-product-row .dp-info { flex:1; min-width:0; }
+.dash-product-row .dp-name { font-size:13px; font-weight:500; color:var(--merchant-text); font-family:'Jost',sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:3px; }
+.dash-product-row .dp-price { font-size:13px; color:var(--merchant-primary); font-weight:600; font-family:'League Spartan',sans-serif; }
+.dash-product-row .dp-actions { display:flex; gap:6px; flex-shrink:0; }
+.dash-product-row .dp-btn { width:32px; height:32px; border-radius:6px; border:1px solid var(--merchant-border); display:flex; align-items:center; justify-content:center; background:#FFF; cursor:pointer; }
+.dash-product-row .dp-btn img { width:16px; height:16px; }
+
+/* Product status toggle */
+.dp-status-toggle { display:flex; align-items:center; gap:6px; }
+.dp-status-toggle input[type="checkbox"] { appearance:none; width:36px; height:20px; background:#DDD; border-radius:10px; cursor:pointer; position:relative; transition:background 0.2s; }
+.dp-status-toggle input[type="checkbox"]:checked { background:var(--merchant-primary); }
+.dp-status-toggle input[type="checkbox"]::after { content:''; position:absolute; width:16px; height:16px; background:#FFF; border-radius:50%; top:2px; left:2px; transition:transform 0.2s; box-shadow:0 1px 4px rgba(0,0,0,0.2); }
+.dp-status-toggle input[type="checkbox"]:checked::after { transform:translateX(16px); }
+
+/* =====================================================================
+   CAMPAIGN CARD — in dashboard
+   ===================================================================== */
+.campaign-card {
+  background: #FFFFFF; border-radius: 12px;
+  border: 1px solid #F0F0F0; overflow: hidden;
+  margin-bottom: 10px;
+}
+.campaign-card .cc-banner {
+  height: 80px; background: var(--merchant-primary);
+  position: relative; overflow: hidden;
+}
+.campaign-card .cc-banner img { width:100%; height:100%; object-fit:cover; opacity:0.7; }
+.campaign-card .cc-banner-label { position:absolute; inset:0; display:flex; align-items:center; padding:0 14px; }
+.campaign-card .cc-title { font-size:16px; font-weight:700; color:#FFF; font-family:'League Spartan',sans-serif; }
+.campaign-card .cc-body { padding:12px 14px; }
+.campaign-card .cc-meta { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.campaign-card .cc-date { font-size:12px; color:var(--merchant-muted); font-family:'Jost',sans-serif; }
+.campaign-card .cc-status { display:inline-flex; align-items:center; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:500; font-family:'Jost',sans-serif; }
+.campaign-card .cc-status.active { background:#ECFDF5; color:#065F46; }
+.campaign-card .cc-status.scheduled { background:#EFF6FF; color:#1D4ED8; }
+.campaign-card .cc-status.ended { background:#F9FAFB; color:#6B7280; border:1px solid #E5E7EB; }
+.campaign-card .cc-actions { display:flex; gap:8px; }
+.campaign-card .cc-btn { flex:1; padding:8px; border-radius:8px; font-size:13px; font-weight:500; font-family:'Jost',sans-serif; cursor:pointer; text-align:center; border:1px solid var(--merchant-border); background:#FFF; color:var(--merchant-text); text-decoration:none; display:flex; align-items:center; justify-content:center; }
+.campaign-card .cc-btn.primary { background:var(--merchant-primary); border-color:var(--merchant-primary); color:#FFF; }
+
+/* =====================================================================
+   QUICK ACTION BUTTONS — dashboard home shortcuts
+   ===================================================================== */
+.dash-quick-actions { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; padding:0 12px; }
+.dash-qa-btn {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  background:#FFFFFF; border-radius:12px; padding:14px 6px;
+  border:1px solid #F0F0F0; text-decoration:none; cursor:pointer;
+  transition:box-shadow 0.15s;
+}
+.dash-qa-btn:hover { box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.dash-qa-btn .qa-icon { width:36px; height:36px; border-radius:10px; background:var(--merchant-surface); display:flex; align-items:center; justify-content:center; }
+.dash-qa-btn .qa-icon img { width:20px; height:20px; }
+.dash-qa-btn .qa-label { font-size:11px; color:var(--merchant-text); font-family:'Jost',sans-serif; text-align:center; line-height:1.2; }
+
+/* =====================================================================
+   MINI CHART BAR — inquiry trend
+   ===================================================================== */
+.mini-chart { display:flex; align-items:flex-end; gap:4px; height:40px; padding:0 2px; }
+.mini-bar { flex:1; background:var(--merchant-surface); border-radius:3px 3px 0 0; min-height:4px; transition:height 0.3s; }
+.mini-bar.today { background:var(--merchant-primary); }

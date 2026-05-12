@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#7B3F00">
+  <title>Dashboard — AmaniRenas</title>
+  <link rel="manifest" href="../manifest.json">
+
+  <link rel="stylesheet" href="../assets/css/swap.css">
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/style-base.css">
+  <link rel="stylesheet" href="../assets/css/style-merchant.css">
+  <link rel="stylesheet" href="../assets/css/style-dashboard.css">
+  <link rel="stylesheet" href="../assets/css/media_query.css">
+
+  <style>
+    :root {
+      --merchant-primary:   #7B3F00;
+      --merchant-secondary: #D4AF37;
+      --merchant-surface:   #FAF7F2;
+      --merchant-text:      #1A1206;
+    }
+    body { background: #F3EFE9; }
+
+    /* ── Dashboard header ── */
+    .dash-top {
+      background: var(--merchant-primary);
+      padding: 20px 16px 56px;
+      position: relative;
+    }
+    .dash-top-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .dash-greeting {
+      font-size: 12px; color: rgba(255,255,255,.7);
+      font-family: 'Jost', sans-serif; margin-bottom: 2px;
+    }
+    .dash-merchant-name {
+      font-size: 20px; font-weight: 700; color: #fff;
+      font-family: 'League Spartan', sans-serif;
+    }
+    .dash-top-actions { display: flex; gap: 10px; align-items: center; }
+    .dash-icon-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,.15); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; position: relative;
+    }
+    .dash-icon-btn img { width: 20px; height: 20px; filter: brightness(0) invert(1); }
+    .dash-notif-dot {
+      position: absolute; top: 5px; right: 5px;
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #EF4444; border: 2px solid var(--merchant-primary);
+    }
+
+    /* ── Store status banner ── */
+    .store-status-banner {
+      margin: 0 12px;
+      margin-top: -32px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.1);
+      padding: 16px;
+      display: flex; align-items: center; gap: 14px;
+      position: relative; z-index: 2;
+    }
+    .store-logo {
+      width: 52px; height: 52px; border-radius: 12px;
+      object-fit: cover; flex-shrink: 0;
+      background: var(--merchant-surface);
+    }
+    .store-info { flex: 1; min-width: 0; }
+    .store-name {
+      font-size: 15px; font-weight: 700; color: var(--merchant-text);
+      font-family: 'League Spartan', sans-serif;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .store-tagline {
+      font-size: 12px; color: #888; font-family: 'Jost', sans-serif;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .store-status-toggle {
+      display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0;
+    }
+    .toggle-switch {
+      appearance: none; width: 44px; height: 24px;
+      background: #DDD; border-radius: 12px; cursor: pointer;
+      position: relative; transition: background .2s;
+    }
+    .toggle-switch:checked { background: #22C55E; }
+    .toggle-switch::after {
+      content: ''; position: absolute;
+      width: 20px; height: 20px; background: #fff; border-radius: 50%;
+      top: 2px; left: 2px; transition: transform .2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+    .toggle-switch:checked::after { transform: translateX(20px); }
+    .toggle-label { font-size: 10px; color: #888; font-family: 'Jost', sans-serif; }
+
+    /* ── Stat grid ── */
+    .stat-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 10px; padding: 16px 12px 0;
+    }
+    .stat-card {
+      background: #fff; border-radius: 14px; padding: 14px;
+      border: 1px solid #EEE;
+    }
+    .stat-label {
+      font-size: 11px; color: #999;
+      font-family: 'Jost', sans-serif; text-transform: uppercase;
+      letter-spacing: .04em; margin-bottom: 6px;
+    }
+    .stat-value {
+      font-size: 26px; font-weight: 800; color: var(--merchant-text);
+      font-family: 'League Spartan', sans-serif; line-height: 1;
+    }
+    .stat-change {
+      font-size: 11px; margin-top: 5px; font-family: 'Jost', sans-serif;
+    }
+    .stat-change.up   { color: #22C55E; }
+    .stat-change.down { color: #EF4444; }
+    .stat-change.neutral { color: #999; }
+
+    /* Mini sparkline */
+    .mini-bars {
+      display: flex; align-items: flex-end; gap: 3px;
+      height: 28px; margin-top: 8px;
+    }
+    .mini-bar {
+      flex: 1; background: #F0EBE3; border-radius: 2px 2px 0 0;
+      min-height: 3px; transition: height .4s;
+    }
+    .mini-bar.today { background: var(--merchant-primary); }
+
+    /* ── Section header ── */
+    .section-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 12px 8px;
+    }
+    .section-hdr h2 {
+      font-size: 15px; font-weight: 700; color: var(--merchant-text);
+      font-family: 'League Spartan', sans-serif; margin: 0;
+    }
+    .section-hdr a {
+      font-size: 13px; color: var(--merchant-primary);
+      font-family: 'Jost', sans-serif; text-decoration: none;
+    }
+
+    /* ── Quick Actions ── */
+    .quick-actions {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 8px; padding: 0 12px;
+    }
+    .qa-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      background: #fff; border-radius: 12px; padding: 12px 6px;
+      border: 1px solid #EEE; text-decoration: none; cursor: pointer;
+    }
+    .qa-btn .qa-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--merchant-surface);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .qa-btn .qa-icon img { width: 22px; height: 22px; }
+    .qa-btn .qa-label {
+      font-size: 11px; color: var(--merchant-text);
+      font-family: 'Jost', sans-serif; text-align: center; line-height: 1.3;
+    }
+
+    /* ── Inquiry list ── */
+    .inq-list { padding: 0 12px 120px; }
+    .inq-card {
+      background: #fff; border-radius: 14px;
+      border: 1px solid #EEE; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px; cursor: pointer;
+      text-decoration: none;
+    }
+    .inq-thumb {
+      width: 54px; height: 54px; border-radius: 10px;
+      object-fit: cover; flex-shrink: 0;
+      background: var(--merchant-surface);
+    }
+    .inq-body { flex: 1; min-width: 0; }
+    .inq-product {
+      font-size: 13px; font-weight: 600; color: var(--merchant-text);
+      font-family: 'Jost', sans-serif;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+    .inq-ref {
+      font-size: 11px; color: #999; font-family: 'Jost', sans-serif;
+      margin-bottom: 4px;
+    }
+    .inq-meta { display: flex; align-items: center; gap: 6px; }
+    .inq-time { font-size: 11px; color: #BBB; font-family: 'Jost', sans-serif; }
+    .inq-right {
+      display: flex; flex-direction: column; align-items: flex-end;
+      gap: 6px; flex-shrink: 0;
+    }
+    .inq-price {
+      font-size: 14px; font-weight: 700; color: var(--merchant-primary);
+      font-family: 'League Spartan', sans-serif;
+    }
+
+    /* Status pills */
+    .status-pill {
+      display: inline-flex; align-items: center; padding: 3px 9px;
+      border-radius: 20px; font-size: 11px; font-weight: 600;
+      font-family: 'Jost', sans-serif;
+    }
+    .status-pill.new       { background: #EFF6FF; color: #1D4ED8; }
+    .status-pill.replied   { background: #FFFBEB; color: #92400E; }
+    .status-pill.confirmed { background: #F0FDF4; color: #14532D; }
+    .status-pill.closed    { background: #F9FAFB; color: #6B7280; border: 1px solid #E5E7EB; }
+
+    /* Unread dot */
+    .unread-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--merchant-primary); flex-shrink: 0; margin-top: 3px;
+    }
+
+    /* Empty inquiries */
+    .empty-inq {
+      text-align: center; padding: 40px 24px;
+    }
+    .empty-inq svg { width: 64px; height: 64px; opacity: .2; margin-bottom: 12px; }
+    .empty-inq h3 { font-size: 15px; font-weight: 600; color: #666; margin-bottom: 4px; }
+    .empty-inq p { font-size: 13px; color: #999; }
+
+    /* ── Dashboard bottom nav ── */
+    .dash-bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px;
+      background: rgba(255,255,255,.97);
+      border-top: 1px solid #E8E0D4;
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 8px 0 max(12px, env(safe-area-inset-bottom));
+      z-index: 900;
+    }
+    .dash-nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      flex: 1; padding: 4px 0; cursor: pointer; text-decoration: none;
+    }
+    .dash-nav-item img { width: 22px; height: 22px; }
+    .dash-nav-item span {
+      font-size: 10px; color: #999; font-family: 'Jost', sans-serif;
+    }
+    .dash-nav-item.active span { color: var(--merchant-primary); }
+
+    /* View storefront button */
+    .view-storefront-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--merchant-primary); color: #fff;
+      border-radius: 10px; padding: 10px 14px;
+      font-size: 13px; font-weight: 600; font-family: 'Jost', sans-serif;
+      text-decoration: none; margin: 0 12px 4px;
+      justify-content: center;
+    }
+    .view-storefront-btn svg { width: 16px; height: 16px; fill: #fff; }
+  </style>
+</head>
+
+<body>
+<div class="site_content">
+
+  <!-- Preloader -->
+  <div class="page-loader" id="page-loader"><div class="blob"></div></div>
+
+  <!-- ── Dashboard Top Header ── -->
+  <div class="dash-top">
+    <div class="dash-top-row">
+      <div>
+        <div class="dash-greeting">Good <span id="timeOfDay">day</span>,</div>
+        <div class="dash-merchant-name" id="dashMerchantName">AmaniRenas</div>
+      </div>
+      <div class="dash-top-actions">
+        <a href="../merchant-onboarding/notification.html" class="dash-icon-btn">
+          <img src="../assets/images/svg/Button-Notification.svg" alt="Notifications">
+          <div class="dash-notif-dot" id="notifDot" style="display:none"></div>
+        </a>
+        <a href="../merchant-onboarding/sign-in.html" class="dash-icon-btn">
+          <img src="../assets/images/svg/profile-icon.svg" alt="Account">
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Store Status Card (floats over header bottom) ── -->
+  <div class="store-status-banner">
+    <img id="storeLogo" src="../assets/images/merchant/logo.png"
+         class="store-logo" alt="Store logo"
+         onerror="this.src='../assets/images/account-profile/account-img.jpg'">
+    <div class="store-info">
+      <div class="store-name" id="storeNameCard">AmaniRenas Beauty</div>
+      <div class="store-tagline" id="storeTaglineCard">Loading store status…</div>
+    </div>
+    <div class="store-status-toggle">
+      <input type="checkbox" class="toggle-switch" id="storeToggle" checked>
+      <span class="toggle-label" id="toggleLabel">Open</span>
+    </div>
+  </div>
+
+  <!-- ── Stats Grid ── -->
+  <div class="stat-grid">
+
+    <div class="stat-card">
+      <div class="stat-label">WhatsApp Taps</div>
+      <div class="stat-value" id="statTaps">—</div>
+      <div class="stat-change neutral" id="statTapsChange">last 7 days</div>
+      <div class="mini-bars" id="miniBarTaps"></div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">Inquiries</div>
+      <div class="stat-value" id="statInq">—</div>
+      <div class="stat-change neutral" id="statInqChange">total stored</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">Page Views</div>
+      <div class="stat-value" id="statViews">—</div>
+      <div class="stat-change neutral">last 7 days</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">Products</div>
+      <div class="stat-value" id="statProducts">—</div>
+      <div class="stat-change neutral">in catalogue</div>
+    </div>
+
+  </div>
+
+  <!-- ── View Storefront CTA ── -->
+  <div style="padding: 16px 12px 0;">
+    <a href="../storefront/storefront-home.html" class="view-storefront-btn">
+      <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+      View Your Storefront
+    </a>
+  </div>
+
+  <!-- ── Quick Actions ── -->
+  <div class="section-hdr">
+    <h2>Quick Actions</h2>
+  </div>
+  <div class="quick-actions">
+    <a href="../storefront/storefront-catalog.html" class="qa-btn">
+      <div class="qa-icon"><img src="../assets/images/svg/fashion.svg" alt="Products"></div>
+      <span class="qa-label">Products</span>
+    </a>
+    <a href="../storefront/storefront-home.html" class="qa-btn">
+      <div class="qa-icon"><img src="../assets/images/svg/home.svg" alt="Storefront"></div>
+      <span class="qa-label">Storefront</span>
+    </a>
+    <a href="#" class="qa-btn" onclick="shareStorefront(); return false;">
+      <div class="qa-icon"><img src="../assets/images/svg/right-half-arrow.svg" alt="Share"></div>
+      <span class="qa-label">Share Link</span>
+    </a>
+    <a href="#clearData" class="qa-btn" onclick="clearAnalyticsData(); return false;">
+      <div class="qa-icon"><img src="../assets/images/svg/Button-Notification.svg" alt="Clear"></div>
+      <span class="qa-label">Reset Data</span>
+    </a>
+  </div>
+
+  <!-- ── Inquiries ── -->
+  <div class="section-hdr">
+    <h2>Recent Inquiries</h2>
+    <a href="#" onclick="return false" style="color:#999;font-size:12px;" id="inquiryCountLink">0 total</a>
+  </div>
+
+  <div class="inq-list" id="inquiryList">
+    <!-- Populated by JS -->
+  </div>
+
+</div><!-- /site_content -->
+
+<!-- ── Dashboard Bottom Nav ── -->
+<nav class="dash-bottom-nav">
+  <a href="../storefront/storefront-home.html" class="dash-nav-item">
+    <img src="../assets/images/svg/home-footer.svg" alt="Home">
+    <span>Storefront</span>
+  </a>
+  <a href="../storefront/storefront-catalog.html" class="dash-nav-item">
+    <img src="../assets/images/svg/search-footer.svg" alt="Products">
+    <span>Products</span>
+  </a>
+  <a href="#" class="dash-nav-item" onclick="openWhatsAppDirect(); return false;">
+    <img src="../assets/images/svg/whatsapp.svg" alt="WhatsApp" style="width:24px;height:24px;">
+    <span>WhatsApp</span>
+  </a>
+  <a href="dashboard-home.html" class="dash-nav-item active">
+    <img src="../assets/images/svg/profile-footer.svg" alt="Dashboard">
+    <span>Dashboard</span>
+  </a>
+</nav>
+
+<!-- ── Scripts ── -->
+<script src="../assets/javascript/jquery.js"></script>
+<script src="../assets/javascript/bootstrap.min.js"></script>
+<script src="../assets/javascript/script-base.js"></script>
+<script src="../assets/javascript/merchant-config.js"></script>
+<script src="../assets/javascript/whatsapp.js"></script>
+<script src="../assets/javascript/analytics.js"></script>
+
+<script>
+'use strict';
+
+/* ──────────────────────────────────────────────
+   HELPERS
+   ────────────────────────────────────────────── */
+function timeOfDay() {
+  var h = new Date().getHours();
+  if (h < 12) return 'morning';
+  if (h < 17) return 'afternoon';
+  return 'evening';
+}
+
+function timeAgo(ts) {
+  var diff = Date.now() - ts;
+  var mins = Math.floor(diff / 60000);
+  if (mins <  1)  return 'just now';
+  if (mins < 60)  return mins + 'm ago';
+  var hrs = Math.floor(mins / 60);
+  if (hrs  < 24)  return hrs + 'h ago';
+  var days = Math.floor(hrs / 24);
+  return days + 'd ago';
+}
+
+function statusPill(status) {
+  var labels = { new:'New', replied:'Replied', confirmed:'Confirmed', closed:'Closed' };
+  var cls    = status || 'new';
+  return '<span class="status-pill ' + cls + '">' + (labels[cls] || cls) + '</span>';
+}
+
+/* ──────────────────────────────────────────────
+   POPULATE STATS
+   ────────────────────────────────────────────── */
+function populateStats() {
+  var stats  = (typeof Analytics !== 'undefined') ? Analytics.getDashboardStats(7) : {};
+  var inqCts = (typeof WhatsApp !== 'undefined')  ? WhatsApp.getInquiryCounts()   : {};
+
+  document.getElementById('statTaps').textContent    = stats.waTaps    || 0;
+  document.getElementById('statViews').textContent   = stats.views     || 0;
+  document.getElementById('statInq').textContent     = inqCts.total    || 0;
+  document.getElementById('statProducts').textContent = MERCHANT.products ? MERCHANT.products.length : 0;
+
+  var newCt = inqCts.new || 0;
+  if (newCt > 0) {
+    document.getElementById('statInqChange').textContent = newCt + ' unread';
+    document.getElementById('statInqChange').className   = 'stat-change up';
+  }
+
+  // Mini sparkline bars
+  buildSparkline(stats.dailyTaps || []);
+}
+
+function buildSparkline(dailyTaps) {
+  var container = document.getElementById('miniBarTaps');
+  if (!container) return;
+  var max = Math.max.apply(null, dailyTaps.map(function(d){ return d.count; })) || 1;
+  var today = new Date().toISOString().split('T')[0];
+  container.innerHTML = dailyTaps.map(function(d) {
+    var pct    = Math.round((d.count / max) * 100);
+    var isToday = d.date === today;
+    return '<div class="mini-bar' + (isToday ? ' today' : '') + '" style="height:' + Math.max(pct, 6) + '%" title="' + d.date + ': ' + d.count + '"></div>';
+  }).join('');
+}
+
+/* ──────────────────────────────────────────────
+   INQUIRY LIST
+   ────────────────────────────────────────────── */
+function populateInquiries() {
+  var inquiries = (typeof WhatsApp !== 'undefined')
+    ? WhatsApp.getInquiries()
+    : JSON.parse(localStorage.getItem('wa_inquiries') || '[]');
+
+  document.getElementById('inquiryCountLink').textContent = inquiries.length + ' total';
+
+  var container = document.getElementById('inquiryList');
+  if (!inquiries.length) {
+    container.innerHTML = renderEmptyState();
+    return;
+  }
+
+  var html = inquiries.slice(0, 20).map(function(inq) {
+    var product  = MERCHANT.products ? MERCHANT.products.find(function(p){ return p.id === inq.productId; }) : null;
+    var thumb    = product ? product.thumbnail : 'assets/images/svg/fashion.svg';
+    var name     = inq.productName || inq.product || 'Unknown product';
+    var price    = inq.price ? MERCHANT.currencySymbol + parseFloat(inq.price).toFixed(2) : '';
+    var timeStr  = inq.timestamp ? timeAgo(new Date(inq.timestamp).getTime()) : (inq.ts ? timeAgo(inq.ts) : '');
+    var status   = inq.status || 'new';
+    var isNew    = status === 'new';
+
+    return '<div class="inq-card" onclick="openInquiry(\'' + inq.id + '\', this)">' +
+      '<img class="inq-thumb" src="../' + thumb + '" alt="' + name + '" onerror="this.src=\'../assets/images/home-screen/womenPro1.png\'">' +
+      '<div class="inq-body">' +
+        '<div class="inq-product">' + name + '</div>' +
+        '<div class="inq-ref">' + (inq.id || '') + '</div>' +
+        '<div class="inq-meta">' +
+          statusPill(status) +
+          (timeStr ? '<span class="inq-time">' + timeStr + '</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="inq-right">' +
+        (price ? '<span class="inq-price">' + price + '</span>' : '') +
+        (isNew ? '<div class="unread-dot"></div>' : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  container.innerHTML = html;
+}
+
+function renderEmptyState() {
+  return '<div class="empty-inq">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+    '<h3>No inquiries yet</h3>' +
+    '<p>When customers tap your WhatsApp buttons, their inquiries will appear here.</p>' +
+    '<a href="../storefront/storefront-home.html" style="display:inline-block;margin-top:16px;padding:10px 20px;background:var(--merchant-primary);color:#fff;border-radius:8px;font-family:Jost,sans-serif;font-size:13px;font-weight:600;text-decoration:none;">View Storefront</a>' +
+  '</div>';
+}
+
+/* ──────────────────────────────────────────────
+   OPEN INQUIRY — open WhatsApp to reply
+   ────────────────────────────────────────────── */
+function openInquiry(id, el) {
+  if (typeof WhatsApp !== 'undefined') {
+    WhatsApp.updateInquiryStatus(id, 'replied');
+  }
+  // Remove unread dot
+  var dot = el ? el.querySelector('.unread-dot') : null;
+  if (dot) dot.remove();
+  // Update pill to "replied"
+  var pill = el ? el.querySelector('.status-pill') : null;
+  if (pill) { pill.className = 'status-pill replied'; pill.textContent = 'Replied'; }
+
+  // Open WA
+  var msg = 'Hello! Regarding your enquiry ' + id + ' — thank you for your interest. How can I help?';
+  window.open('https://wa.me/' + MERCHANT.whatsapp + '?text=' + encodeURIComponent(msg), '_blank');
+}
+
+/* ──────────────────────────────────────────────
+   SHARE STOREFRONT
+   ────────────────────────────────────────────── */
+function shareStorefront() {
+  var url = window.location.origin + '/storefront/storefront-home.html';
+  if (navigator.share) {
+    navigator.share({ title: MERCHANT.name, text: MERCHANT.tagline, url: url });
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function() {
+      alert('Storefront link copied to clipboard!');
+    });
+  } else {
+    prompt('Copy your storefront link:', url);
+  }
+}
+
+/* ──────────────────────────────────────────────
+   STORE TOGGLE
+   ────────────────────────────────────────────── */
+document.getElementById('storeToggle').addEventListener('change', function() {
+  var label = document.getElementById('toggleLabel');
+  label.textContent = this.checked ? 'Open' : 'Closed';
+  localStorage.setItem('store_open', this.checked ? '1' : '0');
+});
+
+/* ──────────────────────────────────────────────
+   QUICK WHATSAPP
+   ────────────────────────────────────────────── */
+function openWhatsAppDirect() {
+  var msg = 'Hello from ' + MERCHANT.name + ' dashboard.';
+  window.open('https://wa.me/' + MERCHANT.whatsapp + '?text=' + encodeURIComponent(msg), '_blank');
+}
+
+/* ──────────────────────────────────────────────
+   CLEAR ANALYTICS (dev reset)
+   ────────────────────────────────────────────── */
+function clearAnalyticsData() {
+  if (!confirm('Clear all analytics and inquiry data? This cannot be undone.')) return;
+  if (typeof Analytics !== 'undefined') Analytics.clearAll();
+  localStorage.removeItem('wa_inquiries');
+  location.reload();
+}
+
+/* ──────────────────────────────────────────────
+   INIT
+   ────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+  // Apply theme
+  if (typeof applyMerchantTheme === 'function') applyMerchantTheme(MERCHANT);
+
+  // Greeting
+  document.getElementById('timeOfDay').textContent = timeOfDay();
+  document.getElementById('dashMerchantName').textContent = MERCHANT.name;
+  document.getElementById('storeNameCard').textContent    = MERCHANT.name;
+
+  // Store status
+  var status = (typeof getMerchantStatus === 'function') ? getMerchantStatus() : { online:true, label:'Open' };
+  document.getElementById('storeTaglineCard').textContent = status.label;
+  document.getElementById('storeToggle').checked = status.online;
+  document.getElementById('toggleLabel').textContent = status.online ? 'Open' : 'Closed';
+
+  // Restore toggle from localStorage override
+  var stored = localStorage.getItem('store_open');
+  if (stored !== null) {
+    var isOpen = stored === '1';
+    document.getElementById('storeToggle').checked = isOpen;
+    document.getElementById('toggleLabel').textContent = isOpen ? 'Open' : 'Closed';
+  }
+
+  // Populate
+  populateStats();
+  populateInquiries();
+
+  // Notification dot (if new inquiries)
+  var inqCts = (typeof WhatsApp !== 'undefined') ? WhatsApp.getInquiryCounts() : {};
+  if ((inqCts.new || 0) > 0) {
+    document.getElementById('notifDot').style.display = '';
+  }
+});
+</script>
+</body>
+</html>
