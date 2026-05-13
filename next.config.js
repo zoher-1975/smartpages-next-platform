@@ -1,15 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Allow importing images from demo merchant
-  images: {
-    remotePatterns: [],
-    // Static demo images live in /public — no external domains needed yet
-  },
-
-  // Strict mode catches issues early
   reactStrictMode: true,
-
-  // We'll add i18n (en/ar RTL) in a later phase
+  images: {
+    unoptimized: true,   // Required for static export; remove when using Vercel image optimization
+  },
+  // Future: i18n for Arabic RTL
   // i18n: { locales: ['en', 'ar'], defaultLocale: 'en' },
 }
 
