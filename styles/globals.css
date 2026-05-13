@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   MERCHANT THEME VARIABLES
-   Default values here; overridden dynamically per merchant in layout.tsx
-   via inline <style> or CSS-in-JS. All Tailwind merchant-* colours read these.
-───────────────────────────────────────────────────────────────────────────── */
 :root {
   --merchant-primary:   #7B3F00;
   --merchant-secondary: #D4AF37;
@@ -14,129 +9,20 @@
   --merchant-text:      #1A1206;
   --merchant-muted:     #6B5C4A;
   --merchant-border:    #E8E0D4;
-
-  /* Safe area insets (iOS notch / home indicator) */
-  --safe-top:    env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   BASE RESET & DEFAULTS
-───────────────────────────────────────────────────────────────────────────── */
 @layer base {
-  html {
-    /* Prevent font size inflation on iOS */
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-  }
-
-  body {
-    @apply bg-white text-merchant-text antialiased;
-    font-feature-settings: 'cv11', 'ss01';
-    /* Mobile-first: constrain to phone width, centred on desktop */
-    @apply min-h-screen;
-  }
-
-  /* Consistent tap highlight removal */
-  button, a {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  /* Focus visible — keyboard users only */
-  :focus-visible {
-    @apply outline-2 outline-offset-2 outline-merchant-primary;
-  }
-
-  /* Remove focus ring on mouse/touch */
-  :focus:not(:focus-visible) {
-    outline: none;
-  }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body { @apply antialiased text-gray-900 bg-white; }
+  button, a { -webkit-tap-highlight-color: transparent; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-[#25D366]; }
+  :focus:not(:focus-visible) { outline: none; }
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   COMPONENT LAYER — shared utility classes
-───────────────────────────────────────────────────────────────────────────── */
-@layer components {
-
-  /* ── Page wrapper — mobile-first centred column ── */
-  .page-container {
-    @apply relative w-full max-w-mobile mx-auto min-h-screen;
-    @apply bg-white overflow-x-hidden;
-  }
-
-  /* ── Bottom navigation spacer (prevents content hiding behind fixed nav) ── */
-  .bottom-nav-spacer {
-    @apply h-20;
-    padding-bottom: var(--safe-bottom);
-  }
-
-  /* ── Section header row (title + "View all" link) ── */
-  .section-header {
-    @apply flex items-center justify-between px-4 mb-3;
-  }
-  .section-title {
-    @apply text-base font-semibold text-merchant-text;
-  }
-  .section-link {
-    @apply text-sm text-merchant-primary;
-  }
-
-  /* ── Skeleton loader ── */
-  .skeleton {
-    @apply bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100;
-    background-size: 200% 100%;
-    @apply animate-shimmer rounded;
-  }
-
-  /* ── WhatsApp CTA button ── */
-  .btn-whatsapp {
-    @apply flex items-center justify-center gap-2.5;
-    @apply w-full py-4 px-5;
-    @apply bg-whatsapp text-white;
-    @apply rounded-xl font-semibold text-base;
-    @apply shadow-whatsapp;
-    @apply transition-all duration-150 active:scale-95;
-    @apply select-none;
-  }
-  .btn-whatsapp:hover { @apply bg-whatsapp-dark; }
-
-  /* ── Primary brand button ── */
-  .btn-primary {
-    @apply flex items-center justify-center gap-2;
-    @apply w-full py-3.5 px-5;
-    @apply bg-merchant-primary text-white;
-    @apply rounded-xl font-semibold text-sm;
-    @apply transition-all duration-150 active:scale-95;
-    @apply select-none;
-  }
-
-  /* ── Card base ── */
-  .card {
-    @apply bg-white rounded-xl border border-merchant-border shadow-card;
-    @apply transition-shadow duration-200;
-  }
-  .card:hover { @apply shadow-card-hover; }
-
-  /* ── Status pills ── */
-  .pill-new       { @apply bg-blue-50   text-blue-700  text-xs font-semibold px-2 py-0.5 rounded-full; }
-  .pill-replied   { @apply bg-amber-50  text-amber-700 text-xs font-semibold px-2 py-0.5 rounded-full; }
-  .pill-confirmed { @apply bg-green-50  text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full; }
-  .pill-closed    { @apply bg-gray-100  text-gray-500  text-xs font-semibold px-2 py-0.5 rounded-full border border-gray-200; }
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   UTILITIES
-───────────────────────────────────────────────────────────────────────────── */
 @layer utilities {
-  /* Hide scrollbar but keep scroll behaviour */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-  /* Safe area padding utilities */
-  .pt-safe { padding-top: var(--safe-top); }
-  .pb-safe { padding-bottom: var(--safe-bottom); }
-
-  /* Text clamp helpers */
-  .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
-  .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .text-2xs { font-size: 0.625rem; line-height: 1rem; }
+  .pt-safe  { padding-top:    env(safe-area-inset-top, 0px); }
+  .pb-safe  { padding-bottom: env(safe-area-inset-bottom, 0px); }
 }

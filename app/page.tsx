@@ -1,98 +1,180 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import { MessageCircle, LayoutDashboard, ShieldCheck, ArrowRight } from 'lucide-react'
+import { PlatformHeader } from '@/components/platform/PlatformHeader'
+import { HeroSection } from '@/components/platform/HeroSection'
+import { SectionContainer, SectionHeading } from '@/components/ui/SectionContainer'
 
-// ── Platform landing page at / ────────────────────────────────────────────────
-// This is NOT a merchant storefront. It's the platform homepage shown when
-// visiting the root URL — explains the product and links to demo / dashboard.
-// Phase 2: becomes the SaaS marketing/signup page.
+export const metadata: Metadata = {
+  title:       'Smart Pages — WhatsApp-First Social Commerce',
+  description: 'Turn social media traffic into WhatsApp sales. Mobile storefronts that convert.',
+}
 
-export default function PlatformLandingPage() {
+function Step({ n, icon, title, desc }: { n: string; icon: string; title: string; desc: string }) {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#1a0d00] via-[#2c1500] to-[#1a0d00]">
-      <div className="page-container px-6 pt-20 pb-16 flex flex-col items-center text-center">
+    <div className="flex gap-4 md:flex-col md:gap-3">
+      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#25D366]/10
+                      border border-[#25D366]/20 flex items-center justify-center
+                      text-[#25D366] font-black text-sm">
+        {n}
+      </div>
+      <div>
+        <p className="text-2xl mb-2">{icon}</p>
+        <h3 className="font-bold text-gray-900 mb-1 text-sm">{title}</h3>
+        <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+      </div>
+    </div>
+  )
+}
 
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20
-                        text-white/80 text-xs font-medium px-3 py-1.5 rounded-full mb-8">
-          <MessageCircle size={12} className="text-whatsapp" />
-          WhatsApp-First Commerce Platform
+function BenefitCard({ icon, title, desc }: { icon: string; title: string; desc: string }) {
+  return (
+    <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+      <span className="text-3xl mb-3 block">{icon}</span>
+      <h3 className="font-bold text-gray-900 mb-2 text-sm">{title}</h3>
+      <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
+    </div>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <>
+      <PlatformHeader transparent />
+      <HeroSection />
+
+      {/* How It Works */}
+      <SectionContainer id="how-it-works" className="bg-white">
+        <SectionHeading
+          badge="Simple flow"
+          title="From social post to WhatsApp sale"
+          subtitle="Four steps — that is all it takes from someone seeing your product to landing in your WhatsApp chat."
+        />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-6">
+          <Step n="1" icon="📱" title="Share your link"
+            desc="Post your Smart Pages store link on Instagram, TikTok, WhatsApp status, or any social platform." />
+          <Step n="2" icon="🛍️" title="Customer browses"
+            desc="They see a beautiful mobile storefront with your products, prices, and details." />
+          <Step n="3" icon="💬" title="One tap to WhatsApp"
+            desc="They tap the button. A pre-filled message with product details lands in your chat." />
+          <Step n="4" icon="💰" title="You close the sale"
+            desc="Reply, confirm, arrange payment — all in WhatsApp, the way you already do business." />
         </div>
+      </SectionContainer>
 
-        {/* Logo / brand mark */}
-        <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/20
-                        flex items-center justify-center mb-6">
-          <span className="text-3xl font-black text-white font-display">SP</span>
-        </div>
-
-        {/* Headline */}
-        <h1 className="text-4xl font-black text-white leading-tight mb-4"
-            style={{ fontFamily: 'var(--font-league-spartan)' }}>
-          Smart Pages
-        </h1>
-        <p className="text-base text-white/70 leading-relaxed mb-12 max-w-xs">
-          A WhatsApp-first merchant catalogue platform. Customers browse, tap, and
-          inquire — merchants receive leads directly on WhatsApp.
-        </p>
-
-        {/* Primary CTA */}
-        <Link
-          href="/store/demo"
-          className="btn-whatsapp max-w-xs mb-4"
-        >
-          <MessageCircle size={20} />
-          View Demo Storefront
-          <ArrowRight size={16} className="ml-auto" />
-        </Link>
-
-        {/* Secondary CTAs */}
-        <div className="flex flex-col gap-3 w-full max-w-xs">
-          <Link
-            href="/dashboard"
-            className="flex items-center justify-center gap-2 py-3.5 px-5
-                       bg-white/10 border border-white/20 text-white
-                       rounded-xl text-sm font-semibold
-                       hover:bg-white/15 transition-colors"
-          >
-            <LayoutDashboard size={16} />
-            Merchant Dashboard
-          </Link>
-          <Link
-            href="/admin"
-            className="flex items-center justify-center gap-2 py-3.5 px-5
-                       bg-white/10 border border-white/20 text-white/60
-                       rounded-xl text-sm font-medium
-                       hover:bg-white/15 transition-colors"
-          >
-            <ShieldCheck size={16} />
-            Platform Admin
-          </Link>
-        </div>
-
-        {/* Feature bullets */}
-        <div className="mt-16 grid grid-cols-1 gap-4 w-full text-left">
+      {/* Stats bar */}
+      <section className="bg-gray-950 py-14">
+        <div className="max-w-4xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
-            { icon: '🛍️', title: 'No cart. No checkout.',    body: 'Every product page has one button: WhatsApp. Customers inquire; you close the sale.' },
-            { icon: '🆔', title: 'Inquiry tracking IDs',     body: 'Every message includes a unique INQ-xxxxx reference so you never lose a lead.' },
-            { icon: '🎨', title: 'Per-merchant theming',      body: 'Brand colours, logo, and WhatsApp number — fully configurable per merchant.' },
-            { icon: '📱', title: 'PWA-ready',                 body: 'Installable on iOS and Android. Works offline. Feels like a native app.' },
-          ].map(({ icon, title, body }) => (
-            <div key={title}
-                 className="bg-white/5 border border-white/10 rounded-xl p-4
-                            flex gap-3 items-start">
-              <span className="text-2xl leading-none mt-0.5">{icon}</span>
-              <div>
-                <p className="text-sm font-semibold text-white mb-0.5">{title}</p>
-                <p className="text-xs text-white/60 leading-relaxed">{body}</p>
-              </div>
+            { n: '47+',    label: 'Active merchants' },
+            { n: '98K',    label: 'Monthly store views' },
+            { n: '12,840', label: 'WhatsApp clicks / mo' },
+            { n: '25%',    label: 'Avg conversion rate' },
+          ].map(({ n, label }) => (
+            <div key={label}>
+              <p className="text-3xl md:text-4xl font-black text-white mb-1">{n}</p>
+              <p className="text-sm text-gray-400">{label}</p>
             </div>
           ))}
         </div>
+      </section>
 
-        {/* Footer */}
-        <p className="mt-12 text-2xs text-white/30">
-          Smart Pages LTD · Phase 1 · {new Date().getFullYear()}
+      {/* Benefits */}
+      <SectionContainer className="bg-gray-50">
+        <SectionHeading
+          badge="Why Smart Pages"
+          title="Built for merchants who sell on WhatsApp"
+          subtitle="No complicated software. Just a storefront that sends customers to your WhatsApp."
+          center
+        />
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {[
+            { icon: '🚀', title: 'Live in 5 minutes',        desc: 'Add products and go live. No coding, no setup complexity.' },
+            { icon: '💚', title: 'WhatsApp-native',           desc: 'Customers stay in WhatsApp. No new apps required.' },
+            { icon: '📊', title: 'Inquiry tracking IDs',      desc: 'Every inquiry gets a unique ID so you never lose a lead.' },
+            { icon: '🎨', title: 'Your brand, your colours',  desc: 'Fully branded storefronts matching your visual identity.' },
+            { icon: '📍', title: 'Built for the region',      desc: 'Designed for merchants in Sudan, Gulf, Egypt, and beyond.' },
+            { icon: '📱', title: 'Mobile-first always',       desc: 'Perfect on every phone — where your customers actually are.' },
+          ].map(b => <BenefitCard key={b.title} {...b} />)}
+        </div>
+      </SectionContainer>
+
+      {/* WhatsApp-first callout */}
+      <SectionContainer className="bg-[#25D366]/5 border-y border-[#25D366]/10">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-5xl mb-5">💬</p>
+          <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-4">
+            WhatsApp is already your CRM.
+            <br />
+            <span className="text-[#25D366]">We just send customers there.</span>
+          </h2>
+          <p className="text-gray-500 leading-relaxed mb-8 max-w-xl mx-auto">
+            Most merchants already manage customer relationships on WhatsApp.
+            Smart Pages plugs directly into that workflow — no new tools, no learning curve.
+          </p>
+          <Link href="/store/demo"
+                className="inline-flex items-center gap-2 bg-[#25D366] text-white
+                           font-bold px-8 py-3.5 rounded-xl hover:bg-[#1da851] transition-colors">
+            See it in action →
+          </Link>
+        </div>
+      </SectionContainer>
+
+      {/* Demo preview */}
+      <SectionContainer className="bg-white">
+        <SectionHeading badge="Live demo" title="See a real merchant storefront"
+          subtitle="AmaniRenas Beauty — a demo store with the full Smart Pages experience." center />
+        <div className="bg-gray-50 border border-gray-200 rounded-3xl p-8 text-center max-w-sm mx-auto">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7B3F00] to-[#5c2e00]
+                          flex items-center justify-center mx-auto mb-4 text-3xl">✨</div>
+          <h3 className="text-xl font-black text-gray-900 mb-1">AmaniRenas Beauty</h3>
+          <p className="text-sm text-gray-500 mb-6">Authentic Sudanese beauty · London, UK</p>
+          <div className="grid grid-cols-3 gap-2 mb-6">
+            {['🌿','🛁','🌹','💫','🌾','🎁'].map((e, i) => (
+              <div key={i} className="aspect-square bg-white rounded-xl border border-gray-100
+                                      flex items-center justify-center text-2xl shadow-sm">{e}</div>
+            ))}
+          </div>
+          <Link href="/store/demo"
+                className="flex items-center justify-center gap-2 bg-[#25D366] text-white
+                           font-bold py-3.5 rounded-xl hover:bg-[#1da851] transition-colors w-full">
+            Open Demo Store
+          </Link>
+        </div>
+      </SectionContainer>
+
+      {/* Final CTA */}
+      <section className="bg-gray-950 py-20 px-4 text-center">
+        <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+          Ready to sell through WhatsApp?
+        </h2>
+        <p className="text-gray-400 mb-8 max-w-md mx-auto">
+          Start with a free demo store. No sign-up required.
         </p>
-      </div>
-    </main>
+        <Link href="/store/demo"
+              className="inline-flex items-center gap-2 bg-[#25D366] text-white
+                         font-bold text-lg px-10 py-4 rounded-2xl
+                         hover:bg-[#1da851] transition-colors">
+          View Demo Store →
+        </Link>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-950 border-t border-white/5 py-8 px-4">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-[#25D366] flex items-center justify-center">
+              <span className="text-white font-black text-xs">SP</span>
+            </div>
+            <span className="text-gray-400 text-sm">Smart Pages LTD</span>
+          </div>
+          <div className="flex items-center gap-6">
+            {[['Demo Store', '/store/demo'], ['Dashboard', '/dashboard'], ['Admin', '/admin']].map(([l, h]) => (
+              <Link key={l} href={h} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">{l}</Link>
+            ))}
+          </div>
+          <p className="text-xs text-gray-600">Phase 1 · {new Date().getFullYear()}</p>
+        </div>
+      </footer>
+    </>
   )
 }

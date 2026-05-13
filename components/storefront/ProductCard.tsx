@@ -1,142 +1,98 @@
+'use client'
+
 import Link from 'next/link'
-import Image from 'next/image'
-import { Star } from 'lucide-react'
-import { cn, formatPrice, formatDiscount } from '@/lib/utils'
-import { WhatsAppCTA } from '@/components/ui/WhatsAppCTA'
-import type { Product, Merchant } from '@/types/merchant'
+import { WhatsAppButton } from '@/components/ui/WhatsAppButton'
+import type { Product } from '@/lib/demo-data'
 
 interface ProductCardProps {
-  product:  Product
-  merchant: Merchant
-  view?:    'grid' | 'list'
-  className?: string
+  product:   Product
+  whatsapp:  string
+  currency?: string
 }
 
-export function ProductCard({ product, merchant, view = 'grid', className }: ProductCardProps) {
-  const sym       = merchant.currencySymbol
-  const hasSale   = product.origPrice !== null && product.origPrice > product.price
-  const slug      = merchant.slug
-  const href      = `/store/${slug}/product/${product.id}`
+export function ProductCard({ product, whatsapp, currency = '£' }: ProductCardProps) {
+  const hasSale = product.originalPrice && product.originalPrice > product.price
+  const price   = `${currency}${product.price.toFixed(2)}`
 
-  if (view === 'list') {
-    return (
-      <Link
-        href={href}
-        className={cn(
-          'flex gap-3 bg-white rounded-xl border border-merchant-border',
-          'shadow-card hover:shadow-card-hover transition-shadow p-3',
-          className
-        )}
-      >
-        {/* Thumbnail */}
-        <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-merchant-surface">
-          <Image
-            src={product.thumbnail}
-            alt={product.shortName}
-            fill
-            className="object-cover"
-            sizes="96px"
-          />
+  return (
+    <div className="group bg-white rounded-2xl border border-gray-100
+                    shadow-sm hover:shadow-md transition-all duration-200
+                    overflow-hidden flex flex-col">
+
+      {/* Image area */}
+      <Link href="/store/demo/product/sample" className="block">
+        <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100
+                        flex items-center justify-center relative overflow-hidden">
+          <span className="text-5xl select-none group-hover:scale-110
+                           transition-transform duration-300">
+            {product.emoji}
+          </span>
           {hasSale && (
-            <span className="absolute top-1 left-1 bg-red-500 text-white
-                             text-2xs font-bold px-1.5 py-0.5 rounded">
+            <span className="absolute top-2 left-2 bg-red-500 text-white
+                             text-xs font-bold px-2 py-0.5 rounded-lg">
               SALE
             </span>
           )}
         </div>
-
-        {/* Info */}
-        <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-          <div>
-            <p className="text-sm font-medium text-merchant-text line-clamp-2 leading-snug">
-              {product.name}
-            </p>
-            <div className="flex items-center gap-1 mt-1">
-              <Star size={11} className="fill-amber-400 text-amber-400" />
-              <span className="text-xs text-merchant-muted">{product.rating}</span>
-              <span className="text-xs text-merchant-muted">({product.reviewCount})</span>
-            </div>
-          </div>
-          <div className="flex items-center justify-between mt-2">
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-base font-bold text-merchant-primary"
-                    style={{ fontFamily: 'var(--font-league-spartan)' }}>
-                {formatPrice(product.price, sym)}
-              </span>
-              {hasSale && (
-                <span className="text-xs text-merchant-muted line-through">
-                  {formatPrice(product.origPrice!, sym)}
-                </span>
-              )}
-            </div>
-            <WhatsAppCTA merchant={merchant} product={product} variant="icon" />
-          </div>
-        </div>
       </Link>
-    )
-  }
-
-  // ── Grid view (default) ────────────────────────────────────────────────────
-  return (
-    <Link
-      href={href}
-      className={cn(
-        'flex flex-col bg-white rounded-xl border border-merchant-border overflow-hidden',
-        'shadow-card hover:shadow-card-hover transition-shadow',
-        className
-      )}
-    >
-      {/* Image */}
-      <div className="relative aspect-square bg-merchant-surface overflow-hidden">
-        <Image
-          src={product.thumbnail}
-          alt={product.shortName}
-          fill
-          className="object-cover transition-transform duration-300 hover:scale-105"
-          sizes="(max-width: 480px) 50vw, 240px"
-        />
-
-        {/* Sale badge */}
-        {hasSale && (
-          <span className="absolute top-2 left-2 bg-red-500 text-white
-                           text-2xs font-bold px-1.5 py-0.5 rounded z-10">
-            {formatDiscount(product.origPrice!, product.price)}
-          </span>
-        )}
-
-        {/* WhatsApp quick-inquiry button */}
-        <div className="absolute bottom-2 right-2 z-10">
-          <WhatsAppCTA merchant={merchant} product={product} variant="icon" />
-        </div>
-      </div>
 
       {/* Body */}
-      <div className="p-2.5 flex flex-col gap-1.5">
-        <p className="text-xs font-medium text-merchant-text line-clamp-2 leading-snug">
-          {product.shortName}
-        </p>
+      <div className="p-3 flex flex-col flex-1 gap-2">
+        <div>
+          <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">
+            {product.category}
+          </p>
+          <Link href="/store/demo/product/sample">
+            <h3 className="text-sm font-semibold text-gray-900 leading-snug
+                           hover:text-[#7B3F00] transition-colors line-clamp-2">
+              {product.name}
+            </h3>
+          </Link>
+        </div>
 
-        <div className="flex items-center justify-between">
-          {/* Price */}
-          <div className="flex items-baseline gap-1">
-            <span className="text-sm font-bold text-merchant-primary"
-                  style={{ fontFamily: 'var(--font-league-spartan)' }}>
-              {formatPrice(product.price, sym)}
-            </span>
+        {/* Stars */}
+        <div className="flex items-center gap-1">
+          <div className="flex">
+            {[1,2,3,4,5].map(i => (
+              <svg key={i} width="11" height="11" viewBox="0 0 24 24"
+                   fill={i <= Math.round(product.rating) ? '#F59E0B' : '#E5E7EB'}>
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            ))}
+          </div>
+          <span className="text-xs text-gray-400">({product.reviews})</span>
+        </div>
+
+        {/* Price + WA */}
+        <div className="flex items-center justify-between mt-auto pt-1">
+          <div>
+            <span className="text-base font-black text-gray-900">{price}</span>
             {hasSale && (
-              <span className="text-2xs text-merchant-muted line-through">
-                {formatPrice(product.origPrice!, sym)}
+              <span className="text-xs text-gray-400 line-through ml-1.5">
+                {currency}{product.originalPrice!.toFixed(2)}
               </span>
             )}
           </div>
-
-          {/* Rating */}
-          <div className="flex items-center gap-0.5">
-            <Star size={10} className="fill-amber-400 text-amber-400" />
-            <span className="text-2xs text-merchant-muted">{product.rating}</span>
-          </div>
+          <WhatsAppButton
+            whatsapp={whatsapp}
+            productName={product.name}
+            productId={product.id}
+            price={price}
+            variant="icon"
+          />
         </div>
       </div>
-    </Link>
+    </div>
+  )
+}
+
+export function ProductGrid({ products, whatsapp, currency = '£' }:
+  { products: Product[]; whatsapp: string; currency?: string }) {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+      {products.map(p => (
+        <ProductCard key={p.id} product={p} whatsapp={whatsapp} currency={currency} />
+      ))}
+    </div>
   )
 }
