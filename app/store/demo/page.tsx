@@ -1,8 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { DEMO_MERCHANT, DEMO_PRODUCTS } from '@/lib/demo-data'
+import {
+  DEMO_MERCHANT, DEMO_PRODUCTS,
+  buildStoreShareWA, buildFacebookShareUrl, buildTelegramShareUrl,
+} from '@/lib/demo-data'
 import { ProductGrid } from '@/components/storefront/ProductCard'
 import { WhatsAppContact } from '@/components/ui/WhatsAppButton'
+import { ShareBarClient } from '@/components/ui/ShareBarClient'
+import { SocialLinks } from '@/components/ui/SocialLinks'
 
 export const metadata: Metadata = {
   title:       'AmaniRenas Beauty · Smart Pages Demo',
@@ -13,6 +18,12 @@ export default function DemoStorePage() {
   const m        = DEMO_MERCHANT
   const featured = DEMO_PRODUCTS.filter(p => p.featured)
   const all      = DEMO_PRODUCTS
+
+  const BASE_URL = 'https://smartpages-next-platform-puce.vercel.app'
+  const pageUrl  = `${BASE_URL}/store/${m.slug}`
+  const waUrl    = buildStoreShareWA(m, pageUrl)
+  const fbUrl    = buildFacebookShareUrl(pageUrl)
+  const tgUrl    = buildTelegramShareUrl(`${m.emoji} ${m.name} — ${m.tagline}`, pageUrl)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -144,6 +155,43 @@ export default function DemoStorePage() {
           </span>
         </div>
         <ProductGrid products={all} whatsapp={m.whatsapp} />
+      </div>
+
+      {/* ── Share this store ── */}
+      <div className="mx-3 mt-6 p-4 bg-white rounded-2xl border border-gray-100 shadow-card">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+          Share this store
+        </p>
+        <ShareBarClient waUrl={waUrl} fbUrl={fbUrl} tgUrl={tgUrl} copyUrl={pageUrl} eventPrefix="store" />
+      </div>
+
+      {/* ── Social links ── */}
+      <div className="mx-3 mt-3 p-4 bg-white rounded-2xl border border-gray-100">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Follow us</p>
+        <SocialLinks social={m.social} variant="grid" />
+      </div>
+
+      {/* ── Campaign catalog links ── */}
+      <div className="mx-3 mt-3">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1 mb-2">
+          Campaigns
+        </p>
+        <div className="flex flex-col gap-2">
+          {[
+            { id: 'camp_01', name: '🌙 Ramadan Special', sub: '15% off · Active', color: 'bg-green-50 border-green-200 text-green-700' },
+            { id: 'camp_02', name: '🎁 Eid Gift Bundle',  sub: 'Coming Apr 10',    color: 'bg-blue-50  border-blue-200  text-blue-700'  },
+          ].map(c => (
+            <Link key={c.id} href={`/store/demo/campaign/${c.id}`}
+                  className="flex items-center justify-between bg-white border border-gray-100
+                             rounded-xl px-4 py-3 hover:shadow-card transition-shadow">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">{c.name}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{c.sub}</p>
+              </div>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${c.color}`}>View →</span>
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* ── WhatsApp block ── */}

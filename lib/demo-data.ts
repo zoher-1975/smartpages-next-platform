@@ -24,17 +24,27 @@ export interface Product {
   tags: string[]
 }
 
+export interface MerchantSocial {
+  whatsapp:   string          // digits only, international format
+  facebook?:  string          // full URL
+  instagram?: string          // full URL
+  tiktok?:    string          // full URL
+  telegram?:  string          // full URL  (t.me/...)
+  website?:   string          // full URL
+}
+
 export interface Merchant {
   id: string
   slug: string
   name: string
   tagline: string
   description: string
-  whatsapp: string   // digits only, international format
+  whatsapp: string            // kept at top-level for backward compat
+  social: MerchantSocial
   category: string
   location: string
   emoji: string
-  coverColor: string  // gradient start
+  coverColor: string          // gradient start
   rating: number
   reviews: number
   productsCount: number
@@ -60,6 +70,10 @@ export interface Campaign {
   conversions: number
   budget: string
   endDate: string
+  discount?: string           // e.g. '15% off'
+  emoji?: string
+  caption?: string            // ready-made marketing caption
+  shareUrl?: string           // public catalog URL
 }
 
 export interface PlatformMerchant {
@@ -82,6 +96,14 @@ export const DEMO_MERCHANT: Merchant = {
   tagline:      'Authentic Sudanese African beauty, delivered worldwide',
   description:  'Traditional Sudanese beauty rituals — khomra, dalka, bukhoor, karkar oil — crafted from heritage recipes and natural ingredients. Trusted by customers across Europe, Sudan, and the Gulf.',
   whatsapp:     '447000000000',
+  social: {
+    whatsapp:  '447000000000',
+    facebook:  'https://facebook.com/amanirenas',
+    instagram: 'https://instagram.com/amanirenas',
+    tiktok:    'https://tiktok.com/@amanirenas',
+    telegram:  'https://t.me/amanirenas',
+    website:   'https://amanirenas.uk',
+  },
   category:     'Beauty & Skincare',
   location:     'London, UK',
   emoji:        '✨',
@@ -220,9 +242,27 @@ export const DEMO_INQUIRIES: Inquiry[] = [
 ]
 
 export const DEMO_CAMPAIGNS: Campaign[] = [
-  { id: 'camp_01', name: 'Ramadan Special',    status: 'active',    reach: 4_200, clicks: 312, conversions: 48, budget: '£0',  endDate: 'Mar 30' },
-  { id: 'camp_02', name: 'Eid Gift Bundle',    status: 'scheduled', reach: 0,     clicks: 0,   conversions: 0,  budget: '£0',  endDate: 'Apr 10' },
-  { id: 'camp_03', name: 'Spring Skincare',    status: 'ended',     reach: 3_100, clicks: 228, conversions: 31, budget: '£0',  endDate: 'Mar 15' },
+  {
+    id: 'camp_01', name: 'Ramadan Special', status: 'active',
+    reach: 4_200, clicks: 312, conversions: 48, budget: '£0', endDate: 'Mar 30',
+    discount: '15% off', emoji: '🌙',
+    caption: '🌙 Ramadan Mubarak! Celebrate with authentic Sudanese beauty rituals.\n\n✨ 15% OFF selected products — limited time only!\n\n🛍️ Shop our heritage collection:\n• Khomra Face Mask — £18.99\n• Dalka Body Scrub — £22.50\n• Karkar Beauty Oil — £16.00\n\n💬 Order via WhatsApp — fast replies guaranteed\n📦 Shipping to UK, EU & Gulf\n\n#RamadanSpecial #SudaneseBeauty #AmaniRenas #NaturalBeauty',
+    shareUrl: 'https://smartpages-next-platform-puce.vercel.app/store/demo',
+  },
+  {
+    id: 'camp_02', name: 'Eid Gift Bundle', status: 'scheduled',
+    reach: 0, clicks: 0, conversions: 0, budget: '£0', endDate: 'Apr 10',
+    discount: '10% off bundles', emoji: '🎁',
+    caption: '🎁 Eid Mubarak! Give the gift of authentic Sudanese beauty.\n\n✨ Gift sets from £45 — beautifully packaged & ready to gift!\n\n💬 Order via WhatsApp\n📦 Shipping UK, EU & Gulf\n\n#EidGifts #SudaneseBeauty #AmaniRenas',
+    shareUrl: 'https://smartpages-next-platform-puce.vercel.app/store/demo',
+  },
+  {
+    id: 'camp_03', name: 'Spring Skincare', status: 'ended',
+    reach: 3_100, clicks: 228, conversions: 31, budget: '£0', endDate: 'Mar 15',
+    discount: '20% off skincare', emoji: '🌸',
+    caption: '🌸 Spring into natural skincare with AmaniRenas Beauty.\n\n✨ Traditional recipes, modern results.\n\n#SpringSkincare #SudaneseBeauty #AmaniRenas',
+    shareUrl: 'https://smartpages-next-platform-puce.vercel.app/store/demo',
+  },
 ]
 
 export const WEEKLY_VIEWS = [42, 58, 71, 65, 88, 94, 103]
@@ -252,7 +292,6 @@ export const PLATFORM_MERCHANTS: PlatformMerchant[] = [
 ]
 
 // ── WhatsApp helpers ──────────────────────────────────────────────────────────
-// Placeholder tracking structure — will connect to WhatsApp Engine in Phase 2
 
 export function buildWhatsAppUrl(
   whatsappNumber: string,
@@ -272,4 +311,79 @@ export function buildWhatsAppUrl(
     `Please confirm availability. Thank you!`,
   ].join('\n')
   return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
+}
+
+// ── Sharing URL builders ──────────────────────────────────────────────────────
+// Phase 1: share links + clipboard. No API integrations yet.
+
+export type ShareEvent =
+  | 'shared_to_whatsapp'
+  | 'shared_to_facebook'
+  | 'shared_to_telegram'
+  | 'copied_instagram_caption'
+  | 'copied_link'
+  | 'downloaded_campaign_card'
+  | 'product_shared'
+  | 'product_whatsapp_clicked'
+
+/** Build a pre-filled WhatsApp share message for a store */
+export function buildStoreShareWA(merchant: Merchant, pageUrl: string): string {
+  const msg = [
+    `✨ Check out ${merchant.name} on Smart Pages!`,
+    ``,
+    `${merchant.tagline}`,
+    ``,
+    `🛍️ Browse our products and order via WhatsApp:`,
+    pageUrl,
+  ].join('\n')
+  return `https://wa.me/?text=${encodeURIComponent(msg)}`
+}
+
+/** Build a pre-filled WhatsApp share message for a product */
+export function buildProductShareWA(
+  merchant: Merchant,
+  product: Product,
+  pageUrl: string
+): string {
+  const price = `£${product.price.toFixed(2)}`
+  const msg = [
+    `${product.emoji} *${product.name}* — ${price}`,
+    ``,
+    `${product.shortDesc}`,
+    ``,
+    `🛍️ Order via WhatsApp:`,
+    pageUrl,
+    ``,
+    `by ${merchant.name} ✨`,
+  ].join('\n')
+  return `https://wa.me/?text=${encodeURIComponent(msg)}`
+}
+
+/** Build a pre-filled WhatsApp share message for a campaign */
+export function buildCampaignShareWA(
+  merchant: Merchant,
+  campaign: Campaign,
+  pageUrl: string
+): string {
+  const msg = [
+    `${campaign.emoji ?? '🔥'} *${campaign.name}* — ${merchant.name}`,
+    ``,
+    campaign.discount ? `🏷️ ${campaign.discount}` : '',
+    ``,
+    `🛍️ Shop the campaign:`,
+    pageUrl,
+    ``,
+    `⏰ Ends ${campaign.endDate}`,
+  ].filter(l => l !== '').join('\n')
+  return `https://wa.me/?text=${encodeURIComponent(msg)}`
+}
+
+/** Facebook share URL */
+export function buildFacebookShareUrl(pageUrl: string): string {
+  return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`
+}
+
+/** Telegram share URL */
+export function buildTelegramShareUrl(text: string, pageUrl: string): string {
+  return `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(text)}`
 }

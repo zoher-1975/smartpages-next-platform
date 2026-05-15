@@ -4,6 +4,7 @@ import {
   DEMO_MERCHANT, DASHBOARD_STATS, DEMO_INQUIRIES,
   DEMO_CAMPAIGNS, WEEKLY_VIEWS, WEEKLY_WA, WEEK_LABELS,
 } from '@/lib/demo-data'
+import { DashboardCampaigns } from '@/components/dashboard/DashboardCampaigns'
 
 export const metadata: Metadata = {
   title:  'Merchant Dashboard · Smart Pages',
@@ -17,11 +18,8 @@ const INQ_STATUS: Record<string, { bg: string; text: string; label: string }> = 
   closed:    { bg:'bg-gray-100',  text:'text-gray-500',  label:'Closed'    },
 }
 
-const CAMP_STATUS: Record<string, { bg: string; text: string }> = {
-  active:    { bg:'bg-green-100', text:'text-green-700' },
-  scheduled: { bg:'bg-blue-100',  text:'text-blue-700'  },
-  ended:     { bg:'bg-gray-100',  text:'text-gray-500'  },
-}
+
+
 
 const maxView = Math.max(...WEEKLY_VIEWS)
 const maxWA   = Math.max(...WEEKLY_WA)
@@ -249,45 +247,40 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Campaigns */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-card mb-8">
+          {/* Campaigns — with Share/Publish modal */}
+          <DashboardCampaigns merchant={m} campaigns={DEMO_CAMPAIGNS} />
+
+          {/* ── Merchant Social Settings ── */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-card mb-5">
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
-              <h2 className="text-sm font-bold text-gray-900">Campaigns</h2>
-              <span className="text-xs bg-green-100 text-green-700 font-bold px-2.5 py-0.5 rounded-full">
-                1 active
-              </span>
+              <h2 className="text-sm font-bold text-gray-900">Social & Contact Settings</h2>
+              <span className="text-xs text-gray-400">Phase 2: editable</span>
             </div>
             <div className="divide-y divide-gray-50">
-              {DEMO_CAMPAIGNS.map(c => {
-                const cs = CAMP_STATUS[c.status]
-                return (
-                  <div key={c.id} className="px-5 py-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <p className="text-sm font-bold text-gray-900">{c.name}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">Ends {c.endDate}</p>
-                      </div>
-                      <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full capitalize ${cs.bg} ${cs.text}`}>
-                        {c.status}
-                      </span>
+              {[
+                { label:'WhatsApp',  value: m.social.whatsapp,  icon:'💬', href:`https://wa.me/${m.social.whatsapp}` },
+                { label:'Instagram', value: m.social.instagram, icon:'📸', href: m.social.instagram  },
+                { label:'Facebook',  value: m.social.facebook,  icon:'👥', href: m.social.facebook   },
+                { label:'Telegram',  value: m.social.telegram,  icon:'✈️', href: m.social.telegram   },
+                { label:'TikTok',    value: m.social.tiktok,    icon:'🎵', href: m.social.tiktok     },
+                { label:'Website',   value: m.social.website,   icon:'🌐', href: m.social.website    },
+              ].filter(r => r.value).map(({ label, value, icon, href }) => (
+                <div key={label} className="flex items-center justify-between px-5 py-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-base flex-shrink-0">{icon}</span>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-gray-500">{label}</p>
+                      <p className="text-xs text-gray-700 truncate font-mono">{value}</p>
                     </div>
-                    {c.status !== 'scheduled' && (
-                      <div className="flex gap-6">
-                        {[
-                          { l:'Reach',       v:c.reach.toLocaleString()       },
-                          { l:'Clicks',      v:c.clicks.toLocaleString()      },
-                          { l:'Conversions', v:c.conversions.toLocaleString() },
-                        ].map(({ l, v }) => (
-                          <div key={l}>
-                            <p className="text-base font-black text-gray-900">{v}</p>
-                            <p className="text-2xs text-gray-400">{l}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
-                )
-              })}
+                  {href && (
+                    <a href={href} target="_blank" rel="noopener noreferrer"
+                       className="text-xs text-[#25D366] font-semibold flex-shrink-0 ml-3 hover:underline">
+                      Open →
+                    </a>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
 

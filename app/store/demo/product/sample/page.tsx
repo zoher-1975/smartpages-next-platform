@@ -1,8 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { DEMO_MERCHANT, DEMO_PRODUCTS } from '@/lib/demo-data'
+import {
+  buildProductShareWA, buildFacebookShareUrl, buildTelegramShareUrl,
+} from '@/lib/demo-data'
 import { WhatsAppButton } from '@/components/ui/WhatsAppButton'
 import { ProductCard } from '@/components/storefront/ProductCard'
+import { ShareBarClient } from '@/components/ui/ShareBarClient'
 
 export const metadata: Metadata = {
   title:       'Khomra Face Mask · AmaniRenas Beauty',
@@ -14,6 +18,12 @@ export default function ProductSamplePage() {
   const product = DEMO_PRODUCTS[0]
   const related = DEMO_PRODUCTS.filter(p => p.id !== product.id).slice(0, 4)
   const price   = `£${product.price.toFixed(2)}`
+
+  const BASE_URL = 'https://smartpages-next-platform-puce.vercel.app'
+  const pageUrl  = `${BASE_URL}/store/demo/product/sample`
+  const waShareUrl = buildProductShareWA(m, product, pageUrl)
+  const fbUrl      = buildFacebookShareUrl(pageUrl)
+  const tgUrl      = buildTelegramShareUrl(`${product.emoji} ${product.name} — ${price}`, pageUrl)
 
   return (
     <div className="min-h-screen bg-white">
@@ -170,6 +180,15 @@ export default function ProductSamplePage() {
                 {m.description}
               </p>
             </div>
+          </div>
+
+          {/* ── Share this product ── */}
+          <div className="mb-6 pb-6 border-b border-gray-100">
+            <h2 className="text-sm font-bold text-gray-900 mb-3">Share this product</h2>
+            <ShareBarClient
+              waUrl={waShareUrl} fbUrl={fbUrl} tgUrl={tgUrl} copyUrl={pageUrl}
+              eventPrefix="product"
+            />
           </div>
 
           {/* Related products */}
